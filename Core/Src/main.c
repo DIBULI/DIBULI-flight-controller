@@ -94,13 +94,22 @@ int main(void)
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
 
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
-  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
-
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
 
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
   /* USER CODE BEGIN 2 */
+  xTaskCreate(
+    task_led_blink,
+    "task_led_blink",
+    configMINIMAL_STACK_SIZE,
+    NULL,
+    configMAX_PRIORITIES - 1, 
+    NULL
+  );
+
+  vTaskStartScheduler();
 
   /* USER CODE END 2 */
 
@@ -111,10 +120,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
-    HAL_Delay(200);
-    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
-    HAL_Delay(200);
+    
   }
   /* USER CODE END 3 */
 }

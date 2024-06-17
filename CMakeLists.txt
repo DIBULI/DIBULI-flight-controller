@@ -30,6 +30,12 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 # Enable CMake support for ASM and C languages
 enable_language(C ASM)
 
+# FreeRTOS settings
+set(FREERTOS_PORT "GCC_ARM_CM3")
+set(FREERTOS_CONFIG_FILE_DIRECTORY "${CMAKE_SOURCE_DIR}/Core/inc")
+add_subdirectory(FreeRTOS-Kernel)
+
+
 # Core project settings
 project(${CMAKE_PROJECT_NAME})
 message("Build type: " ${CMAKE_BUILD_TYPE})
@@ -63,7 +69,7 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
 # Add linked libraries
 target_link_libraries(${CMAKE_PROJECT_NAME}
     stm32cubemx
-
+    freertos_kernel
     # Add user defined libraries
 )
 
