@@ -1,20 +1,18 @@
 #ifndef FREERTOSCONFIG_H
 #define FREERTOSCONFIG_H
 
-#include "stm32f1xx.h"
-
-/* Here is a good place to include header files that are required across
-your application. */
-
+#include "stm32f103x6.h"
 extern uint32_t SystemCoreClock;
 
 #define vPortSVCHandler SVC_Handler
 #define xPortPendSVHandler PendSV_Handler
 #define xPortSysTickHandler SysTick_Handler
+#define configCPU_CLOCK_HZ                      ( SystemCoreClock )
+#define configTOTAL_HEAP_SIZE                       7 * 1024
+
 #define configUSE_PREEMPTION                    1
 #define configUSE_PORT_OPTIMISED_TASK_SELECTION 0
 #define configUSE_TICKLESS_IDLE                 0
-#define configCPU_CLOCK_HZ                      ( SystemCoreClock )
 #define configTICK_RATE_HZ                      1000
 #define configMAX_PRIORITIES                    5
 #define configMINIMAL_STACK_SIZE                128
@@ -39,7 +37,6 @@ extern uint32_t SystemCoreClock;
 /* Memory allocation related definitions. */
 #define configSUPPORT_STATIC_ALLOCATION             0
 #define configSUPPORT_DYNAMIC_ALLOCATION            1
-#define configTOTAL_HEAP_SIZE                       7 * 1024
 #define configAPPLICATION_ALLOCATED_HEAP            4
 #define configSTACK_ALLOCATION_FROM_SEPARATE_HEAP   0
 

@@ -199,13 +199,11 @@ add_library(freertos_kernel STATIC
     $<IF:$<BOOL:$<FILTER:${FREERTOS_HEAP},EXCLUDE,^[1-5]$>>,${FREERTOS_HEAP},portable/MemMang/heap_${FREERTOS_HEAP}.c>
 )
 
-target_compile_definitions(freertos_kernel_port INTERFACE STM32F103x6)
 target_include_directories(freertos_kernel
     PUBLIC
         include
         ${FREERTOS_CONFIG_FILE_DIRECTORY}
-        ../Drivers/CMSIS/Device/ST/STM32F1xx/Include
-        ../Drivers/CMSIS/Include
+        ${BOARD_FREERTOS_NEEDED_INCLUDE_DIRS}
 )
 
 target_link_libraries(freertos_kernel freertos_kernel_port)

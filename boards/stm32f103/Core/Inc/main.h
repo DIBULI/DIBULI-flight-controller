@@ -19,6 +19,7 @@
 /* USER CODE END Header */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
+
 #ifndef MAIN_H
 #define MAIN_H
 
@@ -31,7 +32,6 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "fctasks.h"
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/

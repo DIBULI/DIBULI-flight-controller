@@ -6,56 +6,27 @@
             "hidden": true,
             "generator": "Ninja",
             "binaryDir": "${sourceDir}/build/${presetName}",
-            "toolchainFile": "${sourceDir}/cmake/gcc-arm-none-eabi.cmake",
             "cacheVariables": {
                 "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
             }
         },
         {
-            "name": "Debug",
+            "name": "stm32f103-Debug",
             "inherits": "default",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Debug"
-            }
-        },
-        {
-            "name": "RelWithDebInfo",
-            "inherits": "default",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "RelWithDebInfo"
-            }
-        },
-        {
-            "name": "Release",
-            "inherits": "default",
+            "toolchainFile": "${sourceDir}/boards/stm32f103/cmake/toolchain.cmake",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Release"
-            }
-        },
-        {
-            "name": "MinSizeRel",
-            "inherits": "default",
-            "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "MinSizeRel"
             }
         }
     ],
     "buildPresets": [
         {
-            "name": "Debug",
-            "configurePreset": "Debug"
+            "name": "stm32f103-Debug",
+            "configurePreset": "stm32f103-Debug"
         },
         {
-            "name": "RelWithDebInfo",
-            "configurePreset": "RelWithDebInfo"
-        },
-        {
-            "name": "Release",
-            "configurePreset": "Release"
-        },
-        {
-            "name": "MinSizeRel",
-            "configurePreset": "MinSizeRel"
+            "name": "stm32f103-Release",
+            "configurePreset": "stm32f103-Release"
         }
     ]
 }

@@ -16,8 +16,8 @@
   */
 
 /* Define to prevent recursive inclusion -------------------------------------*/
-#ifndef __STM32F1xx_HAL_RCC_H
-#define __STM32F1xx_HAL_RCC_H
+#ifndef STM32F1XX_HAL_RCC_H
+#define STM32F1XX_HAL_RCC_H
 
 #ifdef __cplusplus
 extern "C" {
@@ -1370,6 +1370,6 @@ void              HAL_RCC_CSSCallback(void);
 }
 #endif
 
-#endif /* __STM32F1xx_HAL_RCC_H */
+#endif /* STM32F1XX_HAL_RCC_H */
 
 
