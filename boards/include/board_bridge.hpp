@@ -12,13 +12,9 @@ public:
 
   uint8_t initialize();
 
-  uint8_t task_led_blink(void *pvParameters);
+  uint8_t task_led_on();
+
+  uint8_t task_led_off();
 };
-
-extern BoardBridge* board_bridge;
-
-extern "C" {
-  void system_task_led_blink(void *pvParameters);
-}
 
 #endif /* BOARD_BRIDGE_HPP */

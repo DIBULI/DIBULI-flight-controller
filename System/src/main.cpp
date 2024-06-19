@@ -2,6 +2,7 @@
 #include "task.h"
 
 #include "board_bridge.hpp"
+#include "system_tasks.hpp"
 
 void *operator new(size_t size) {
   return pvPortMalloc(size);
@@ -24,6 +25,8 @@ BoardBridge* board_bridge = new BoardBridge();
 int main(void) {
 
   board_bridge->initialize();
+
+  create_system_tasks();
   
   vTaskStartScheduler();
 

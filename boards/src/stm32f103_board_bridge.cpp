@@ -94,39 +94,17 @@ uint8_t BoardBridge::initialize() {
   SystemClock_Config();
   MX_GPIO_Init();
 
-  xTaskCreate(
-    system_task_led_blink,
-    "task_led_blink",
-    configMINIMAL_STACK_SIZE,
-    NULL,
-    configMAX_PRIORITIES - 1, 
-    NULL
-  );
-
-  return 0;
-}
-
-uint8_t BoardBridge::task_led_blink(void *pvParameters) {
   
-  while(1)
-  {
-    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
-    vTaskDelay(pdMS_TO_TICKS(100));
-    HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
-    vTaskDelay(pdMS_TO_TICKS(100));
-  }
-
-  /* Tasks must not attempt to return from their implementing
-  function or otherwise exit.  In newer FreeRTOS port
-  attempting to do so will result in an configASSERT() being
-  called if it is defined.  If it is necessary for a task to
-  exit then have the task call vTaskDelete( NULL ) to ensure
-  its exit is clean. */
-  vTaskDelete( NULL );
 
   return 0;
 }
 
-void system_task_led_blink(void *pvParameters) {
-  board_bridge->task_led_blink(pvParameters);
+uint8_t BoardBridge::task_led_on() {
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_RESET);
+  return 0;
+}
+
+uint8_t BoardBridge::task_led_off() {
+  HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+  return 0;
 }
