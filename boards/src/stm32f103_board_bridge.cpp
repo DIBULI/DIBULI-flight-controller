@@ -6,10 +6,13 @@ extern "C" {
 
 #include "stm32f1xx_hal.h"
 
+I2C_HandleTypeDef hi2c1;
+
 void Error_Handler(void);
 
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
+static void MX_I2C1_Init(void);
 
 #ifdef __cplusplus
 }
@@ -69,6 +72,40 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 }
 
+/**
+  * @brief I2C1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_I2C1_Init(void)
+{
+
+  /* USER CODE BEGIN I2C1_Init 0 */
+
+  /* USER CODE END I2C1_Init 0 */
+
+  /* USER CODE BEGIN I2C1_Init 1 */
+
+  /* USER CODE END I2C1_Init 1 */
+  hi2c1.Instance = I2C1;
+  hi2c1.Init.ClockSpeed = 100000;
+  hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
+  hi2c1.Init.OwnAddress1 = 0;
+  hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
+  hi2c1.Init.DualAddressMode = I2C_DUALADDRESS_DISABLE;
+  hi2c1.Init.OwnAddress2 = 0;
+  hi2c1.Init.GeneralCallMode = I2C_GENERALCALL_DISABLE;
+  hi2c1.Init.NoStretchMode = I2C_NOSTRETCH_DISABLE;
+  if (HAL_I2C_Init(&hi2c1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN I2C1_Init 2 */
+
+  /* USER CODE END I2C1_Init 2 */
+
+}
+
 /* USER CODE END 4 */
 
 /**
@@ -93,8 +130,13 @@ uint8_t BoardBridge::initialize() {
   
   SystemClock_Config();
   MX_GPIO_Init();
+  MX_I2C1_Init();
 
-  
+  return 0;
+}
+
+uint8_t BoardBridge::configure_sensors() {
+  configure_imu();
 
   return 0;
 }
@@ -106,5 +148,55 @@ uint8_t BoardBridge::task_led_on() {
 
 uint8_t BoardBridge::task_led_off() {
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_13, GPIO_PIN_SET);
+  return 0;
+}
+
+#define MPU6050_ADDRESS (0x68 << 1)
+#define MPU6050_ACC_X_HIGH_REG		0x3B
+#define MPU6050_GYRO_X_HIGH_REG		0x43
+#define MPU6050_TEMPRATURE_HIGH_REG		0x41
+#define IMU_READING_MULTIPLIER (1.0 / 4096.0 * 9.81);
+#define	GYRO_READING_MULTIPLIER (1.0 / 65.5);
+uint8_t BoardBridge::configure_imu() {
+  uint8_t check;
+  uint8_t data;
+
+  HAL_I2C_Mem_Read(&hi2c1, MPU6050_ADDRESS, 0x75, 1, &check, 1, HAL_MAX_DELAY);
+
+  if (check == 0x68) {
+    // Acc config
+    data = 0x10;
+    HAL_I2C_Mem_Write(&hi2c1, MPU6050_ADDRESS, 0x1C, 1, &data, 1, HAL_MAX_DELAY);
+    
+    // Gyro config
+    data = 0x08;
+    HAL_I2C_Mem_Write(&hi2c1, MPU6050_ADDRESS, 0x1B, 1, &data, 1, HAL_MAX_DELAY);
+
+    // Power Up
+    data = 0x00;
+    HAL_I2C_Mem_Write(&hi2c1, MPU6050_ADDRESS, 0x6B, 1, &data, 1, HAL_MAX_DELAY);
+  }
+
+  return 0;
+}
+  
+uint8_t BoardBridge::read_imu_data(float* data, float &temp) {
+  uint8_t iicData[14];
+
+  HAL_I2C_Mem_Read(&hi2c1, MPU6050_ADDRESS, MPU6050_ACC_X_HIGH_REG, 1, iicData, 14, HAL_MAX_DELAY);
+
+  // Acc
+  data[0] = (int16_t)(iicData[0] << 8 | iicData[1]) * IMU_READING_MULTIPLIER;  // X
+  data[1] = (int16_t)(iicData[2] << 8 | iicData[3]) * IMU_READING_MULTIPLIER;  // Y
+  data[2] = (int16_t)(iicData[4] << 8 | iicData[5]) * IMU_READING_MULTIPLIER;  // Z
+
+  // Temp
+  temp = (int16_t)(iicData[6] << 8 | iicData[7]) * 1/340.0 + 36.53;
+
+  // Gyro
+  data[3] = (int16_t)(iicData[8] << 8 | iicData[9]) * GYRO_READING_MULTIPLIER;  // X
+  data[4] = (int16_t)(iicData[10] << 8 | iicData[11]) * GYRO_READING_MULTIPLIER; // Y
+  data[5] = (int16_t)(iicData[12] << 8 | iicData[13]) * GYRO_READING_MULTIPLIER; // Z
+
   return 0;
 }

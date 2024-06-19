@@ -1,8 +1,7 @@
 #include "system_tasks.hpp"
 
 void system_task_led_blink(void *pvParameters) {
-  while(1)
-  {
+  while(1) {
     board_bridge->task_led_on();
     vTaskDelay(pdMS_TO_TICKS(500));
     board_bridge->task_led_off();
@@ -18,6 +17,16 @@ void system_task_led_blink(void *pvParameters) {
   vTaskDelete( NULL );
 }
 
+void system_task_read_imu(void *pvParameters) {
+  float* imuData  = (float*) pvParameters;
+  while(1) {
+    board_bridge->read_imu_data(imuData, imuData[6]);
+    vTaskDelay(pdMS_TO_TICKS(1000 / 200));
+  }
+
+  vTaskDelete( NULL );
+}
+
 void create_system_tasks() {
   xTaskCreate(
     system_task_led_blink,
@@ -25,6 +34,15 @@ void create_system_tasks() {
     configMINIMAL_STACK_SIZE,
     NULL,
     configMAX_PRIORITIES - 1, 
+    NULL
+  );
+
+  xTaskCreate(
+    system_task_read_imu,
+    "task_read_imu",
+    configMINIMAL_STACK_SIZE,
+    sensor_manager->imuReadings.data(),
+    configMAX_PRIORITIES - 2, 
     NULL
   );
 }

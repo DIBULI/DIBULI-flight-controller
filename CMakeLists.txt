@@ -38,6 +38,7 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 )
 
 FILE(GLOB_RECURSE FC_SOURCE_FILES 
+  System/src/sensors/**.cpp
   System/src/**.cpp
 )
 

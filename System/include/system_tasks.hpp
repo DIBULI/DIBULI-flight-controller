@@ -2,6 +2,7 @@
 #define SYSTEM_TASKS_HPP
 
 #include "board_bridge.hpp"
+#include "sensors/sensor_manager.hpp"
 
 #ifdef __cplusplus
 extern "C" {
@@ -12,9 +13,13 @@ extern "C" {
 
 extern BoardBridge* board_bridge;
 
+extern SensorManager* sensor_manager;
+
 void create_system_tasks();
 
 void system_task_led_blink(void *pvParameters);
+
+void system_task_read_imu(void *pvParameters);
 
 #ifdef __cplusplus
 }

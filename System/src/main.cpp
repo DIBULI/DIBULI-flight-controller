@@ -22,9 +22,14 @@ void operator delete[](void *p){
 
 BoardBridge* board_bridge = new BoardBridge();
 
+SensorManager* sensor_manager = new SensorManager();
+
 int main(void) {
 
   board_bridge->initialize();
+
+
+  board_bridge->configure_sensors();
 
   create_system_tasks();
   
