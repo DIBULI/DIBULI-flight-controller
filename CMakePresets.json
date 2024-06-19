@@ -4,7 +4,7 @@
         {
             "name": "default",
             "hidden": true,
-            "generator": "Ninja",
+            "generator": "Unix Makefiles",
             "binaryDir": "${sourceDir}/build/${presetName}",
             "cacheVariables": {
                 "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
@@ -15,7 +15,7 @@
             "inherits": "default",
             "toolchainFile": "${sourceDir}/boards/stm32f103/cmake/toolchain.cmake",
             "cacheVariables": {
-                "CMAKE_BUILD_TYPE": "Release"
+                "CMAKE_BUILD_TYPE": "Debug"
             }
         }
     ],
