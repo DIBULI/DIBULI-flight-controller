@@ -21,6 +21,8 @@ void system_task_led_blink(void *pvParameters);
 
 void system_task_read_imu(void *pvParameters);
 
+void system_task_uart_helloworld(void *pvParameters);
+
 #ifdef __cplusplus
 }
 #endif
