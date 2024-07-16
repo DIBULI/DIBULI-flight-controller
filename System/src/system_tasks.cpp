@@ -54,12 +54,12 @@ void create_system_tasks() {
     NULL
   );
 
-  xTaskCreate(
-    system_task_uart_helloworld,
-    "task_uart_helloworld",
-    configMINIMAL_STACK_SIZE,
-    NULL,
-    configMAX_PRIORITIES - 2, 
-    NULL
-  );
+  // xTaskCreate(
+  //   system_task_uart_helloworld,
+  //   "task_uart_helloworld",
+  //   configMINIMAL_STACK_SIZE,
+  //   NULL,
+  //   configMAX_PRIORITIES - 2, 
+  //   NULL
+  // );
 }

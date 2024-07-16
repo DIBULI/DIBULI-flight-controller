@@ -16,6 +16,8 @@ static void MX_GPIO_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_USART1_UART_Init(void);
 
+uint8_t aRxBuffer[10];
+
 #ifdef __cplusplus
 }
 #endif
@@ -168,6 +170,8 @@ uint8_t BoardBridge::initialize() {
   MX_I2C1_Init();
   MX_USART1_UART_Init();
 
+  HAL_UART_Receive_IT(&huart1, (uint8_t *)&aRxBuffer, 1);
+
   return 0;
 }
 
@@ -239,4 +243,14 @@ uint8_t BoardBridge::read_imu_data(float* data, float &temp) {
 
 uint8_t BoardBridge::uart_send_message(uint8_t* data, uint16_t size) {
   return HAL_UART_Transmit(&huart1, data, size, 100);
+}
+
+/* USER CODE BEGIN 1 */
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
+
+  if(huart->Instance==USART1) {
+    HAL_UART_Transmit(&huart1, (uint8_t *)&aRxBuffer, 1, 100);
+    HAL_UART_Receive_IT(&huart1, (uint8_t *)&aRxBuffer, 1);
+  }
+  
 }
