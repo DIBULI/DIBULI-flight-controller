@@ -28,7 +28,7 @@ void system_task_read_imu(void *pvParameters) {
 }
 
 void system_task_uart_helloworld(void *pvParameters) {
-  uint8_t tx_buf[] = "Hello World";
+  uint8_t tx_buf[] = "Hello World\r\n";
   while(1) {
     board_bridge->uart_send_message(tx_buf, sizeof(tx_buf));
     vTaskDelay(pdMS_TO_TICKS(1000 / 200));
