@@ -5,6 +5,7 @@ extern "C" {
 #endif
 
 #include "stm32f1xx_hal.h"
+#include "common/circular_byte_array.hpp"
 
 I2C_HandleTypeDef hi2c1;
 UART_HandleTypeDef huart1;
@@ -14,9 +15,11 @@ void Error_Handler(void);
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_I2C1_Init(void);
+static void MX_DMA_Init(void);
 static void MX_USART1_UART_Init(void);
 
 uint8_t aRxBuffer[10];
+uint8_t aTxBuffer[10];
 
 #ifdef __cplusplus
 }
@@ -167,10 +170,11 @@ uint8_t BoardBridge::initialize() {
   
   SystemClock_Config();
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_I2C1_Init();
   MX_USART1_UART_Init();
 
-  HAL_UART_Receive_IT(&huart1, (uint8_t *)&aRxBuffer, 1);
+  HAL_UART_Receive_DMA(&huart1, (uint8_t *)&aRxBuffer, 10);
 
   return 0;
 }
@@ -248,9 +252,28 @@ uint8_t BoardBridge::uart_send_message(uint8_t* data, uint16_t size) {
 /* USER CODE BEGIN 1 */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 
-  if(huart->Instance==USART1) {
-    HAL_UART_Transmit(&huart1, (uint8_t *)&aRxBuffer, 1, 100);
-    HAL_UART_Receive_IT(&huart1, (uint8_t *)&aRxBuffer, 1);
+  if(huart->Instance == USART1) {
+    memcpy(aTxBuffer, aRxBuffer, 10);
+    HAL_UART_Transmit_DMA(&huart1, (uint8_t *)&aTxBuffer, 10);
   }
   
+}
+
+/**
+  * Enable DMA controller clock
+  */
+static void MX_DMA_Init(void)
+{
+
+  /* DMA controller clock enable */
+  __HAL_RCC_DMA1_CLK_ENABLE();
+
+  /* DMA interrupt init */
+  /* DMA1_Channel4_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel4_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel4_IRQn);
+  /* DMA1_Channel5_IRQn interrupt configuration */
+  HAL_NVIC_SetPriority(DMA1_Channel5_IRQn, 5, 0);
+  HAL_NVIC_EnableIRQ(DMA1_Channel5_IRQn);
+
 }

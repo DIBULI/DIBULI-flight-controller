@@ -6,6 +6,7 @@ set(CMAKE_PROJECT_NAME dibuli-flight-controller)
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE)
 
 enable_language(C CXX ASM)
+enable_testing()
 
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED ON)

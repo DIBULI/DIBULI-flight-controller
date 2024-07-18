@@ -29,7 +29,7 @@ int main(void) {
   board_bridge->initialize();
 
 
-  board_bridge->configure_sensors();
+  // board_bridge->configure_sensors();
 
   create_system_tasks();
   
