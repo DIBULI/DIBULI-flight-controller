@@ -18,8 +18,10 @@ static void MX_I2C1_Init(void);
 static void MX_DMA_Init(void);
 static void MX_USART1_UART_Init(void);
 
-uint8_t aRxBuffer[10];
-uint8_t aTxBuffer[10];
+uint8_t aRxBuffer[32];
+uint8_t aTxBuffer[128];
+
+CircularByteArray cba(512);
 
 #ifdef __cplusplus
 }
@@ -174,7 +176,7 @@ uint8_t BoardBridge::initialize() {
   MX_I2C1_Init();
   MX_USART1_UART_Init();
 
-  HAL_UART_Receive_DMA(&huart1, (uint8_t *)&aRxBuffer, 10);
+  HAL_UART_Receive_DMA(&huart1, (uint8_t *)&aRxBuffer, 32);
 
   return 0;
 }
@@ -251,12 +253,18 @@ uint8_t BoardBridge::uart_send_message(uint8_t* data, uint16_t size) {
 
 /* USER CODE BEGIN 1 */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-
   if(huart->Instance == USART1) {
-    memcpy(aTxBuffer, aRxBuffer, 10);
-    HAL_UART_Transmit_DMA(&huart1, (uint8_t *)&aTxBuffer, 10);
+    if (cba.append(aRxBuffer, 32) == 0) {
+      if (cba.size() >= 128) { // if we replace 128 with 32, the system may be unable to retrieve all the data and will loss data.
+        cba.peek(aTxBuffer, cba.size(), 0);
+        HAL_UART_Transmit_DMA(&huart1, aTxBuffer, cba.size());
+        cba.remove(cba.size());
+      }
+    } else {
+      char msg[] = "failed\r\n";
+      HAL_UART_Transmit_DMA(&huart1, (uint8_t *)msg, sizeof(msg));
+    }
   }
-  
 }
 
 /**
@@ -270,10 +278,10 @@ static void MX_DMA_Init(void)
 
   /* DMA interrupt init */
   /* DMA1_Channel4_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Channel4_IRQn, 5, 0);
+  HAL_NVIC_SetPriority(DMA1_Channel4_IRQn, 2, 0);
   HAL_NVIC_EnableIRQ(DMA1_Channel4_IRQn);
   /* DMA1_Channel5_IRQn interrupt configuration */
-  HAL_NVIC_SetPriority(DMA1_Channel5_IRQn, 5, 0);
+  HAL_NVIC_SetPriority(DMA1_Channel5_IRQn, 2, 0);
   HAL_NVIC_EnableIRQ(DMA1_Channel5_IRQn);
 
 }

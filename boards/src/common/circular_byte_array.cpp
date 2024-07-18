@@ -10,6 +10,7 @@ CircularByteArray::CircularByteArray(uint32_t size) {
   // length = headerIndex < tailIndex ? headerIndex + size - tailIndex : headerIndex - tailIndex;
   length = 0;
   xMutex = xSemaphoreCreateBinary();
+  xSemaphoreGive(xMutex);
 }
 
 CircularByteArray::~CircularByteArray() {
@@ -17,7 +18,7 @@ CircularByteArray::~CircularByteArray() {
 }
 
 uint8_t CircularByteArray::append(const uint8_t* data, uint32_t size) {
-  if (xSemaphoreTake(xMutex, portMAX_DELAY) == pdTRUE) {
+  if (xSemaphoreTake(xMutex, ( TickType_t ) 10) == pdTRUE) {
     if (size > remain()) {
       return 1;
     } else {
@@ -26,6 +27,7 @@ uint8_t CircularByteArray::append(const uint8_t* data, uint32_t size) {
       if (lengthToTheEnd > size) {  // if the remaining array (to the end) capacity can store all the request data
         memcpy(this->byteArray + headerIndex, data, size);
         headerIndex += size;
+        headerIndex %= arraySize;
       } else {  // if the remaining array (to the end) capacity can  not store all the request data
         memcpy(this->byteArray + headerIndex, data, lengthToTheEnd);
         memcpy(this->byteArray, data + lengthToTheEnd, size - lengthToTheEnd);
@@ -42,7 +44,7 @@ uint8_t CircularByteArray::append(const uint8_t* data, uint32_t size) {
 }
 
 uint8_t CircularByteArray::peek(uint8_t* data, uint32_t size, uint32_t offset) {
-  if (xSemaphoreTake(xMutex, portMAX_DELAY) == pdTRUE) {
+  if (xSemaphoreTake(xMutex, ( TickType_t ) 10) == pdTRUE) {
     uint32_t lengthToTheEnd = arraySize - tailIndex - offset;
 
     if (lengthToTheEnd > size) { // if the remaining array (to the end) capacity can retrieve all the request data
@@ -60,11 +62,12 @@ uint8_t CircularByteArray::peek(uint8_t* data, uint32_t size, uint32_t offset) {
 }
 
 uint8_t CircularByteArray::remove(uint32_t size) {
-  if (xSemaphoreTake(xMutex, portMAX_DELAY) == pdTRUE) {
+  if (xSemaphoreTake(xMutex, ( TickType_t ) 10) == pdTRUE) {
     uint32_t lengthToTheEnd = arraySize - tailIndex;
 
     if (lengthToTheEnd > size) { // if the remaining array (to the end) capacity can delete the requested data size
       tailIndex += size;
+      tailIndex %= arraySize;
     } else { // if the remaining array (to the end) capacity can not delete the requested data size
       tailIndex = size - lengthToTheEnd;
     }
