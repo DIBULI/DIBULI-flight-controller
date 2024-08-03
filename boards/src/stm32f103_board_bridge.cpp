@@ -5,7 +5,7 @@ extern "C" {
 #endif
 
 #include "stm32f1xx_hal.h"
-#include "common/circular_byte_array.hpp"
+#include "dprotocol/circular_byte_array.hpp"
 
 I2C_HandleTypeDef hi2c1;
 UART_HandleTypeDef huart1;
@@ -284,4 +284,8 @@ static void MX_DMA_Init(void)
   HAL_NVIC_SetPriority(DMA1_Channel5_IRQn, 2, 0);
   HAL_NVIC_EnableIRQ(DMA1_Channel5_IRQn);
 
+}
+
+uint8_t BoardBridge::uart_receive_message(uint8_t* data, uint16_t size) {
+  
 }

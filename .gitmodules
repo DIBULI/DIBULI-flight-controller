@@ -1,0 +1,3 @@
+[submodule "Libs/DProtocol"]
+	path = Libs/DProtocol
+	url = git@github.com:DIBULI/DProtocol.git

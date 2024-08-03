@@ -24,7 +24,6 @@ target_include_directories(board_bridge_lib PUBLIC
 
 target_sources(board_bridge_lib PUBLIC
   ${BOARD_BRIDGE_IMPL}
-  src/common/circular_byte_array.cpp
 )
 
 add_subdirectory(../FreeRTOS-Kernel ${CMAKE_BINARY_DIR}/FreeRTOS-Kernel)
@@ -32,4 +31,5 @@ add_subdirectory(../FreeRTOS-Kernel ${CMAKE_BINARY_DIR}/FreeRTOS-Kernel)
 target_link_libraries(board_bridge_lib
   ${BOARD_LIB}
   freertos_kernel
+  dprotocol
 )

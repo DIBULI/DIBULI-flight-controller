@@ -23,6 +23,8 @@ endif()
 project(${CMAKE_PROJECT_NAME})
 message("Build type: " ${CMAKE_BUILD_TYPE})
 
+add_subdirectory(Libs)
+
 set(BOARD "stm32f103" CACHE STRING "Set the board type")
 
 # Include board related toolchain file and libraries
@@ -64,6 +66,7 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
 target_link_libraries(${CMAKE_PROJECT_NAME}
     ${BOARD_LIB}
     board_bridge_lib
+    dprotocol
 )
 
 add_custom_command(

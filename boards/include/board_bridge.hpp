@@ -22,6 +22,8 @@ public:
   uint8_t read_imu_data(float* data, float &temp);
 
   uint8_t uart_send_message(uint8_t* data, uint16_t size);
+
+  uint8_t uart_receive_message(uint8_t* data, uint16_t size);
 };
 
 #endif /* BOARD_BRIDGE_HPP */
