@@ -2,7 +2,7 @@
 
 This repo contains the source codes used for self-designed flight controller.
 
-## Dependecy required
+## Dependency required
 
 1. st-link utils
 2. arm gnu toolchain
