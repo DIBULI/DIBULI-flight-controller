@@ -1,0 +1,8 @@
+{
+    "version": "2.0.0",
+    "tasks": [{
+        "label": "build and flash",
+        "command": "cd ${workspaceRoot}/build/stm32f103-Debug; cmake --build .; cmake --build . --target flash-firmware",
+        "type": "shell"
+    }]
+}

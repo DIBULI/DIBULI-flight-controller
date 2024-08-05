@@ -1,0 +1,27 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "cortex-debug",
+            "request": "launch",
+            "name": "Debug (STLink)",
+            "servertype": "stutil",
+            "interface": "swd",
+            "cwd": "${workspaceRoot}",
+            "preLaunchTask": "build and flash",
+            "runToEntryPoint": "main",
+            "executable": "build/stm32f103-Debug/dibuli-flight-controller.elf",
+            "device": "STM32F103",
+            "svdFile": "${workspaceRoot}/svds/stm32f103.svd",
+            "swoConfig": {
+                "enabled": true,
+                "cpuFrequency": 8000000,
+                "swoFrequency": 2000000,
+                "source": "probe",
+                "decoders": [
+                    { "type": "console", "label": "ITM", "port": 0 }
+                ]
+            }
+        }
+    ]
+}

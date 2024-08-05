@@ -17,6 +17,14 @@
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug"
             }
+        },
+        {
+            "name": "stm32f103-Release",
+            "inherits": "default",
+            "toolchainFile": "${sourceDir}/boards/stm32f103/cmake/toolchain.cmake",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Release"
+            }
         }
     ],
     "buildPresets": [
