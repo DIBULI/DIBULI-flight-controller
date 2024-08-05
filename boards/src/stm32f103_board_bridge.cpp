@@ -18,10 +18,11 @@ static void MX_I2C1_Init(void);
 static void MX_DMA_Init(void);
 static void MX_USART1_UART_Init(void);
 
-uint8_t aRxBuffer[32];
-uint8_t aTxBuffer[128];
+#define DMA_UART_RX_BUFFER_SIZE 16
+uint8_t aRxBuffer[DMA_UART_RX_BUFFER_SIZE];
+extern bool freeRTOS_started;
 
-CircularByteArray cba(512);
+extern CircularByteArray *cba;
 
 #ifdef __cplusplus
 }
@@ -162,6 +163,18 @@ void Error_Handler(void)
   {
   }
 }
+void wait(uint32_t ms)
+{
+    uint32_t count;
+    const uint32_t cycles_per_loop = 8;
+
+    count = (8000 / cycles_per_loop) * ms;
+
+    while (count--)
+    {
+        __asm("nop");
+    }
+}
 
 BoardBridge::BoardBridge() {}
 
@@ -170,13 +183,17 @@ BoardBridge::~BoardBridge() {}
 uint8_t BoardBridge::initialize() {
   HAL_Init();
   
+  wait(500);
+
   SystemClock_Config();
   MX_GPIO_Init();
   MX_DMA_Init();
   MX_I2C1_Init();
   MX_USART1_UART_Init();
 
-  HAL_UART_Receive_DMA(&huart1, (uint8_t *)&aRxBuffer, 32);
+  HAL_UART_Receive_DMA(&huart1, (uint8_t *)&aRxBuffer, DMA_UART_RX_BUFFER_SIZE);
+
+  configure_sensors();
 
   return 0;
 }
@@ -207,20 +224,20 @@ uint8_t BoardBridge::configure_imu() {
   uint8_t check;
   uint8_t data;
 
-  HAL_I2C_Mem_Read(&hi2c1, MPU6050_ADDRESS, 0x75, 1, &check, 1, HAL_MAX_DELAY);
+  HAL_I2C_Mem_Read(&hi2c1, MPU6050_ADDRESS, 0x75, 1, &check, 1, 100);
 
   if (check == 0x68) {
     // Acc config
     data = 0x10;
-    HAL_I2C_Mem_Write(&hi2c1, MPU6050_ADDRESS, 0x1C, 1, &data, 1, HAL_MAX_DELAY);
+    HAL_I2C_Mem_Write(&hi2c1, MPU6050_ADDRESS, 0x1C, 1, &data, 1, 100);
     
     // Gyro config
     data = 0x08;
-    HAL_I2C_Mem_Write(&hi2c1, MPU6050_ADDRESS, 0x1B, 1, &data, 1, HAL_MAX_DELAY);
+    HAL_I2C_Mem_Write(&hi2c1, MPU6050_ADDRESS, 0x1B, 1, &data, 1, 100);
 
     // Power Up
     data = 0x00;
-    HAL_I2C_Mem_Write(&hi2c1, MPU6050_ADDRESS, 0x6B, 1, &data, 1, HAL_MAX_DELAY);
+    HAL_I2C_Mem_Write(&hi2c1, MPU6050_ADDRESS, 0x6B, 1, &data, 1, 100);
   }
 
   return 0;
@@ -248,18 +265,21 @@ uint8_t BoardBridge::read_imu_data(float* data, float &temp) {
 }
 
 uint8_t BoardBridge::uart_send_message(uint8_t* data, uint16_t size) {
-  return HAL_UART_Transmit(&huart1, data, size, 100);
+  return HAL_UART_Transmit_DMA(&huart1, data, size);
 }
 
 /* USER CODE BEGIN 1 */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
   if(huart->Instance == USART1) {
-    if (cba.append(aRxBuffer, 32) == 0) {
-      if (cba.size() >= 128) { // if we replace 128 with 32, the system may be unable to retrieve all the data and will loss data.
-        cba.peek(aTxBuffer, cba.size(), 0);
-        HAL_UART_Transmit_DMA(&huart1, aTxBuffer, cba.size());
-        cba.remove(cba.size());
-      }
+    if (!freeRTOS_started) {
+      return;
+    }
+    if (cba->append(aRxBuffer, DMA_UART_RX_BUFFER_SIZE) == 0) {
+      // if (cba->size() >= 128) { // if we replace 128 with 32, the system may be unable to retrieve all the data and will loss data.
+      //   cba->peek(aTxBuffer, cba->size(), 0);
+      //   HAL_UART_Transmit_DMA(&huart1, aTxBuffer, cba->size());
+      //   cba->remove(cba->size());
+      // }
     } else {
       char msg[] = "failed\r\n";
       HAL_UART_Transmit_DMA(&huart1, (uint8_t *)msg, sizeof(msg));

@@ -42,6 +42,7 @@ target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE
 
 FILE(GLOB_RECURSE FC_SOURCE_FILES 
   System/src/sensors/**.cpp
+  System/src/messages/**.cpp
   System/src/**.cpp
 )
 
@@ -64,7 +65,6 @@ target_compile_definitions(${CMAKE_PROJECT_NAME} PRIVATE
 
 # Add linked libraries
 target_link_libraries(${CMAKE_PROJECT_NAME}
-    ${BOARD_LIB}
     board_bridge_lib
     dprotocol
 )

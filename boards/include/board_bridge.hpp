@@ -1,6 +1,8 @@
 #ifndef BOARD_BRIDGE_HPP
 #define BOARD_BRIDGE_HPP
 
+#include <string>
+
 #include "FreeRTOS.h"
 #include "task.h"
 

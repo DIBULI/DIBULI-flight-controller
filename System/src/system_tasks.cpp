@@ -31,7 +31,14 @@ void system_task_uart_helloworld(void *pvParameters) {
   uint8_t tx_buf[] = "Hello World\r\n";
   while(1) {
     board_bridge->uart_send_message(tx_buf, sizeof(tx_buf));
-    vTaskDelay(pdMS_TO_TICKS(1000 / 200));
+    vTaskDelay(pdMS_TO_TICKS(1000 / 100));
+  }
+}
+
+void system_task_handle_message(void *pvParameters) {
+  while(1) {
+    message_manager->handle_message_task();
+    vTaskDelay(pdMS_TO_TICKS(1000 / 100));
   }
 }
 
@@ -41,7 +48,7 @@ void create_system_tasks() {
     "task_led_blink",
     configMINIMAL_STACK_SIZE,
     NULL,
-    configMAX_PRIORITIES - 1, 
+    configMAX_PRIORITIES - 2, 
     NULL
   );
 
@@ -51,6 +58,15 @@ void create_system_tasks() {
     configMINIMAL_STACK_SIZE,
     sensor_manager->imuReadings.data(),
     configMAX_PRIORITIES - 2, 
+    NULL
+  );
+
+  xTaskCreate(
+    system_task_handle_message,
+    "task_handle_message",
+    configMINIMAL_STACK_SIZE,
+    NULL,
+    configMAX_PRIORITIES - 2,
     NULL
   );
 

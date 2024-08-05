@@ -3,6 +3,7 @@
 
 #include "board_bridge.hpp"
 #include "sensors/sensor_manager.hpp"
+#include "messages/message_manager.hpp"
 
 #ifdef __cplusplus
 extern "C" {
@@ -14,6 +15,8 @@ extern "C" {
 extern BoardBridge* board_bridge;
 
 extern SensorManager* sensor_manager;
+
+extern MessageManager* message_manager;
 
 void create_system_tasks();
 

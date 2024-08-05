@@ -6,6 +6,3 @@ SensorManager::SensorManager() {
 
 
 SensorManager::~SensorManager() {}
-
-
-
