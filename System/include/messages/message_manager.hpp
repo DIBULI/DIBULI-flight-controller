@@ -20,6 +20,8 @@ public:
   CircularByteArray *cba;
   SensorManager* sensor_manager;
   DProtocal dprotocol;
+
+  uint8_t *messageBinary;
 };
 
 #endif /* MESSAGE_MANAGER_HPP */

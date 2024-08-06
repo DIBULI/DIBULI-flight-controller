@@ -8,7 +8,7 @@ public:
   SensorManager();
   ~SensorManager();
 
-  std::vector<float> imuReadings;
+  float imuReadings[7];
 };
 
 #endif /* SENSOR_MANAGER_HPP */

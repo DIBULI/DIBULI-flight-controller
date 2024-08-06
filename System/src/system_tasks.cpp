@@ -56,7 +56,7 @@ void create_system_tasks() {
     system_task_read_imu,
     "task_read_imu",
     configMINIMAL_STACK_SIZE,
-    sensor_manager->imuReadings.data(),
+    sensor_manager->imuReadings,
     configMAX_PRIORITIES - 2, 
     NULL
   );

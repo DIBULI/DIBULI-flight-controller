@@ -227,6 +227,32 @@ uint8_t BoardBridge::configure_imu() {
   HAL_I2C_Mem_Read(&hi2c1, MPU6050_ADDRESS, 0x75, 1, &check, 1, 100);
 
   if (check == 0x68) {
+    // Reset
+    data = 0x80;
+    HAL_I2C_Mem_Write(&hi2c1, MPU6050_ADDRESS, 0x6B, 1, &data, 1, 100);
+
+    wait(200);
+
+    // Power up
+    data = 0x01;
+    HAL_I2C_Mem_Write(&hi2c1, MPU6050_ADDRESS, 0x6B, 1, &data, 1, 100);
+
+    wait(200);
+
+    data = 0x00;
+    HAL_I2C_Mem_Write(&hi2c1, MPU6050_ADDRESS, 0x6C, 1, &data, 1, 100);
+
+    data = 0x00;
+    HAL_I2C_Mem_Write(&hi2c1, MPU6050_ADDRESS, 0x38, 1, &data, 1, 100);
+
+    // 1000 hz
+    data = 0x00;
+    HAL_I2C_Mem_Write(&hi2c1, MPU6050_ADDRESS, 0x19, 1, &data, 1, 100);
+
+    // DLPF
+    data = 0x04;
+    HAL_I2C_Mem_Write(&hi2c1, MPU6050_ADDRESS, 0x1A, 1, &data, 1, 100);
+
     // Acc config
     data = 0x10;
     HAL_I2C_Mem_Write(&hi2c1, MPU6050_ADDRESS, 0x1C, 1, &data, 1, 100);
@@ -235,18 +261,16 @@ uint8_t BoardBridge::configure_imu() {
     data = 0x08;
     HAL_I2C_Mem_Write(&hi2c1, MPU6050_ADDRESS, 0x1B, 1, &data, 1, 100);
 
-    // Power Up
-    data = 0x00;
-    HAL_I2C_Mem_Write(&hi2c1, MPU6050_ADDRESS, 0x6B, 1, &data, 1, 100);
+    
   }
 
   return 0;
 }
   
-uint8_t BoardBridge::read_imu_data(float* data, float &temp) {
-  uint8_t iicData[14];
+uint8_t iicData[14];
 
-  HAL_I2C_Mem_Read(&hi2c1, MPU6050_ADDRESS, MPU6050_ACC_X_HIGH_REG, 1, iicData, 14, HAL_MAX_DELAY);
+uint8_t BoardBridge::read_imu_data(float* data, float &temp) {
+  HAL_I2C_Mem_Read(&hi2c1, MPU6050_ADDRESS, MPU6050_ACC_X_HIGH_REG, 1, iicData, 14, 50);
 
   // Acc
   data[0] = (int16_t)(iicData[0] << 8 | iicData[1]) * IMU_READING_MULTIPLIER;  // X
@@ -265,7 +289,7 @@ uint8_t BoardBridge::read_imu_data(float* data, float &temp) {
 }
 
 uint8_t BoardBridge::uart_send_message(uint8_t* data, uint16_t size) {
-  return HAL_UART_Transmit_DMA(&huart1, data, size);
+  return HAL_UART_Transmit(&huart1, data, size, 100);
 }
 
 /* USER CODE BEGIN 1 */
